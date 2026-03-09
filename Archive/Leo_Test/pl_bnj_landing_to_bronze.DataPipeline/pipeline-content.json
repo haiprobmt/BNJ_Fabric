@@ -1,0 +1,473 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 3,
+          "items": {
+            "value": "@json(activity('Lookup brz config').output.result.exitValue)",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "JsonSource",
+                  "formatSettings": {
+                    "type": "JsonReadSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobStorageReadSettings",
+                    "recursive": true,
+                    "enablePartitionDiscovery": false
+                  },
+                  "datasetSettings": {
+                    "type": "Json",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": {
+                          "value": "@item().batch_group",
+                          "type": "Expression"
+                        },
+                        "fileName": {
+                          "value": "@concat('Data/',pipeline().parameters.batch_id,'/',item().src_table, '.json')",
+                          "type": "Expression"
+                        }
+                      }
+                    },
+                    "schema": {},
+                    "linkedService": {
+                      "name": "lh_bnj_bronze",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "3e386ab5-d874-a042-4c6d-938ac9d7507e",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "LakehouseTableSink",
+                  "tableActionOption": "OverwriteSchema",
+                  "applyVOrder": true,
+                  "partitionOption": "None",
+                  "datasetSettings": {
+                    "type": "LakehouseTable",
+                    "typeProperties": {
+                      "schema": {
+                        "value": "@item().tgt_catalog",
+                        "type": "Expression"
+                      },
+                      "table": {
+                        "value": "@item().tgt_table",
+                        "type": "Expression"
+                      }
+                    },
+                    "schema": [],
+                    "linkedService": {
+                      "name": "lh_bnj_bronze",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "3e386ab5-d874-a042-4c6d-938ac9d7507e",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Tables"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "translator": {
+                  "type": "TabularTranslator",
+                  "mappings": [
+                    {
+                      "source": {
+                        "name": "_id",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "_id",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "date",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "date",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "remarks",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "remarks",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "location",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "location",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "invoice",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "invoice",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "reason",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "reason",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "serial",
+                        "type": "Int64"
+                      },
+                      "sink": {
+                        "name": "serial",
+                        "physicalType": "long"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "finalized",
+                        "type": "Int64"
+                      },
+                      "sink": {
+                        "name": "finalized",
+                        "physicalType": "long"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "finalized_on",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "finalized_on",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "finalized_by",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "finalized_by",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "created_on",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "created_on",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "created_by",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "created_by",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "last_edited",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "last_edited",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "last_edited_by",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "last_edited_by",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.cpu",
+                        "type": "Double"
+                      },
+                      "sink": {
+                        "name": "inventory.cpu",
+                        "physicalType": "long"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.qty",
+                        "type": "Int64"
+                      },
+                      "sink": {
+                        "name": "inventory.qty",
+                        "physicalType": "long"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.batch",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "inventory.batch",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.expiry",
+                        "type": "Int64"
+                      },
+                      "sink": {
+                        "name": "inventory.expiry",
+                        "physicalType": "long"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.remarks",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "inventory.remarks",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.given_id",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "inventory.given_id",
+                        "physicalType": "string"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "inventory.adjustment_id",
+                        "type": "String"
+                      },
+                      "sink": {
+                        "name": "inventory.adjustment_id",
+                        "physicalType": "string"
+                      }
+                    }
+                  ],
+                  "collectionReference": "",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  },
+                  "columnFlattenSettings": {
+                    "treatArrayAsString": false,
+                    "treatStructAsString": false,
+                    "flattenColumnDelimiter": "."
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Load to Bronze Plato",
+              "dependsOn": []
+            },
+            {
+              "type": "TridentNotebook",
+              "typeProperties": {
+                "notebookId": "cf774da6-0134-4578-960e-76062eca7908",
+                "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+                "parameters": {
+                  "METHOD_NAME": {
+                    "value": "end_job_instance",
+                    "type": "string"
+                  },
+                  "PARAMETERS": {
+                    "value": {
+                      "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',item().job_id,'\",\n    \"status\":\"',string(activity('Load to Bronze Plato').output.executionDetails[0].status),'\",\n    \"src_row_num\":\"',if(equals(string(activity('Load to Bronze Plato').output.executionDetails[0].status), 'Succeeded'), string(activity('Load to Bronze Plato').output.rowsRead), 0 ),'\",\n    \"tgt_row_num\":\"',if(equals(string(activity('Load to Bronze Plato').output.executionDetails[0].status), 'Succeeded'), string(activity('Load to Bronze Plato').output.rowsCopied), 0 ),'\",\n    \"msg\":\"', if(equals(string(activity('Load to Bronze Plato').output.executionDetails[0].status), 'Failed'), string(activity('Load to Bronze Plato').output.errors[0].Message), 'Successed' ),'\"\n}')",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  }
+                },
+                "sessionTag": {
+                  "value": "@pipeline().parameters.batch_id",
+                  "type": "Expression"
+                }
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "End job instance",
+              "state": "Inactive",
+              "onInactiveMarkAs": "Succeeded",
+              "dependsOn": [
+                {
+                  "activity": "Load to Bronze Plato",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "name": "ForEach1",
+        "dependsOn": [
+          {
+            "activity": "Start_Job_Instance",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "lookup_config",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_group_name\":\"bronze\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.batch_id",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Lookup brz config",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "cbd1c078-33e1-4f65-a9fe-0201fd749faa",
+          "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "start_job_instance_dev",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\",\n    \"job_group_name\": \"bronze\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Start_Job_Instance",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "Lookup brz config",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "p_batch_group": {
+        "type": "String"
+      },
+      "p_job_id": {
+        "type": "String",
+        "defaultValue": "6676"
+      },
+      "batch_id": {
+        "type": "String",
+        "defaultValue": "20260204173700"
+      }
+    }
+  }
+}

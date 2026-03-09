@@ -1,0 +1,62 @@
+[
+  {
+    "name": "silver_supplier",
+    "path": "/Tables/plato",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/plato_test/silver_supplier",
+        "itemId": "00000000-0000-0000-0000-000000000000",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  },
+  {
+    "name": "silver_invoice",
+    "path": "/Tables/plato",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/plato/silver_invoice_rebuild_20260306075515",
+        "itemId": "00000000-0000-0000-0000-000000000000",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  },
+  {
+    "name": "silver_inventory",
+    "path": "/Tables/plato",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/plato_test/silver_inventory",
+        "itemId": "00000000-0000-0000-0000-000000000000",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  },
+  {
+    "name": "silver_corporate",
+    "path": "/Tables/plato",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/plato_test/silver_corporate",
+        "itemId": "00000000-0000-0000-0000-000000000000",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  },
+  {
+    "name": "silver_contact",
+    "path": "/Tables/plato",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/plato_test/silver_contact",
+        "itemId": "00000000-0000-0000-0000-000000000000",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  }
+]

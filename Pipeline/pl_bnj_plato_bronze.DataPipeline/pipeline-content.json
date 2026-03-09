@@ -1,0 +1,369 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 2,
+          "items": {
+            "value": "@json(activity('Lookup brz config').output.result.exitValue)",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "GetMetadata",
+              "typeProperties": {
+                "datasetSettings": {
+                  "type": "Json",
+                  "typeProperties": {
+                    "location": {
+                      "type": "LakehouseLocation",
+                      "folderPath": {
+                        "value": "@concat(item().batch_group,'/Data')",
+                        "type": "Expression"
+                      },
+                      "fileName": {
+                        "value": "@concat(pipeline().parameters.batch_id, '/', item().src_table, '.json')",
+                        "type": "Expression"
+                      }
+                    }
+                  },
+                  "schema": {},
+                  "connectionSettings": {
+                    "name": "lh_bnj_bronze",
+                    "properties": {
+                      "type": "Lakehouse",
+                      "typeProperties": {
+                        "artifactId": "3e386ab5-d874-a042-4c6d-938ac9d7507e",
+                        "workspaceId": "00000000-0000-0000-0000-000000000000",
+                        "rootFolder": "Files"
+                      },
+                      "externalReferences": {
+                        "connection": "01fb3fb4-1c38-41dc-8c12-23e3cb2ab4b6"
+                      },
+                      "annotations": []
+                    }
+                  },
+                  "annotations": []
+                },
+                "fieldList": [
+                  "size"
+                ],
+                "storeSettings": {
+                  "type": "AzureBlobStorageReadSettings",
+                  "recursive": true,
+                  "enablePartitionDiscovery": false
+                },
+                "formatSettings": {
+                  "type": "JsonReadSettings"
+                }
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "GetMetadata_JSON",
+              "dependsOn": []
+            },
+            {
+              "type": "IfCondition",
+              "typeProperties": {
+                "expression": {
+                  "value": "@greater(activity('GetMetadata_JSON').output.size, 500)\n",
+                  "type": "Expression"
+                },
+                "ifTrueActivities": [
+                  {
+                    "type": "Copy",
+                    "typeProperties": {
+                      "source": {
+                        "type": "JsonSource",
+                        "formatSettings": {
+                          "type": "JsonReadSettings"
+                        },
+                        "storeSettings": {
+                          "type": "AzureBlobStorageReadSettings",
+                          "recursive": true,
+                          "enablePartitionDiscovery": false
+                        },
+                        "datasetSettings": {
+                          "type": "Json",
+                          "typeProperties": {
+                            "location": {
+                              "type": "LakehouseLocation",
+                              "folderPath": {
+                                "value": "@concat(item().batch_group, '/Data')",
+                                "type": "Expression"
+                              },
+                              "fileName": {
+                                "value": "@concat(pipeline().parameters.batch_id, '/', item().src_table, '.json')",
+                                "type": "Expression"
+                              }
+                            }
+                          },
+                          "schema": {},
+                          "linkedService": {
+                            "name": "lh_bnj_bronze",
+                            "properties": {
+                              "type": "Lakehouse",
+                              "typeProperties": {
+                                "artifactId": "3e386ab5-d874-a042-4c6d-938ac9d7507e",
+                                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                                "rootFolder": "Files"
+                              },
+                              "annotations": []
+                            }
+                          },
+                          "annotations": []
+                        }
+                      },
+                      "sink": {
+                        "type": "LakehouseTableSink",
+                        "tableActionOption": "OverwriteSchema",
+                        "applyVOrder": true,
+                        "partitionOption": "None",
+                        "datasetSettings": {
+                          "type": "LakehouseTable",
+                          "typeProperties": {
+                            "schema": {
+                              "value": "@item().tgt_catalog",
+                              "type": "Expression"
+                            },
+                            "table": {
+                              "value": "@item().tgt_table",
+                              "type": "Expression"
+                            }
+                          },
+                          "schema": [],
+                          "linkedService": {
+                            "name": "lh_bnj_bronze",
+                            "properties": {
+                              "type": "Lakehouse",
+                              "typeProperties": {
+                                "artifactId": "3e386ab5-d874-a042-4c6d-938ac9d7507e",
+                                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                                "rootFolder": "Tables"
+                              },
+                              "annotations": []
+                            }
+                          },
+                          "annotations": []
+                        }
+                      },
+                      "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                          "allowDataTruncation": true,
+                          "treatBooleanAsNumber": false
+                        },
+                        "columnFlattenSettings": {
+                          "treatArrayAsString": false,
+                          "treatStructAsString": false,
+                          "flattenColumnDelimiter": "."
+                        }
+                      },
+                      "enableStaging": false
+                    },
+                    "policy": {
+                      "timeout": "0.12:00:00",
+                      "retry": 0,
+                      "retryIntervalInSeconds": 30,
+                      "secureInput": false,
+                      "secureOutput": false
+                    },
+                    "name": "Load to Bronze Plato",
+                    "dependsOn": []
+                  },
+                  {
+                    "type": "TridentNotebook",
+                    "typeProperties": {
+                      "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+                      "workspaceId": "00000000-0000-0000-0000-000000000000",
+                      "parameters": {
+                        "METHOD_NAME": {
+                          "value": "end_job_instance",
+                          "type": "string"
+                        },
+                        "PARAMETERS": {
+                          "value": {
+                            "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',item().job_id,'\",\n    \"status\":\"',string(activity('Load to Bronze Plato').output.executionDetails[0].status),'\",\n    \"src_row_num\":\"',if(equals(string(activity('Load to Bronze Plato').output.executionDetails[0].status), 'Succeeded'), string(activity('Load to Bronze Plato').output.rowsRead), 0 ),'\",\n    \"tgt_row_num\":\"',if(equals(string(activity('Load to Bronze Plato').output.executionDetails[0].status), 'Succeeded'), string(activity('Load to Bronze Plato').output.rowsCopied), 0 ),'\",\n    \"msg\":\"', if(equals(string(activity('Load to Bronze Plato').output.executionDetails[0].status), 'Failed'), string(activity('Load to Bronze Plato').output.errors[0].Message), 'Successed' ),'\"\n}')",
+                            "type": "Expression"
+                          },
+                          "type": "string"
+                        }
+                      },
+                      "sessionTag": {
+                        "value": "@pipeline().parameters.p_batch_group",
+                        "type": "Expression"
+                      }
+                    },
+                    "policy": {
+                      "timeout": "0.12:00:00",
+                      "retry": 0,
+                      "retryIntervalInSeconds": 30,
+                      "secureInput": false,
+                      "secureOutput": false
+                    },
+                    "name": "End job instance",
+                    "dependsOn": [
+                      {
+                        "activity": "Load to Bronze Plato",
+                        "dependencyConditions": [
+                          "Succeeded"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "ifFalseActivities": [
+                  {
+                    "type": "TridentNotebook",
+                    "typeProperties": {
+                      "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+                      "workspaceId": "00000000-0000-0000-0000-000000000000",
+                      "parameters": {
+                        "METHOD_NAME": {
+                          "value": "end_job_instance",
+                          "type": "string"
+                        },
+                        "PARAMETERS": {
+                          "value": {
+                            "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',item().job_id,'\",\n    \"status\":\"Succeeded\",\n    \"src_row_num\":\"0\",\n    \"tgt_row_num\":\"0\",\n    \"msg\":\"Skipped, null json file\"\n}')",
+                            "type": "Expression"
+                          },
+                          "type": "string"
+                        }
+                      },
+                      "sessionTag": {
+                        "value": "@pipeline().parameters.p_batch_group",
+                        "type": "Expression"
+                      }
+                    },
+                    "policy": {
+                      "timeout": "0.12:00:00",
+                      "retry": 0,
+                      "retryIntervalInSeconds": 30,
+                      "secureInput": false,
+                      "secureOutput": false
+                    },
+                    "name": "End job instance_skip",
+                    "dependsOn": []
+                  }
+                ]
+              },
+              "name": "Check null files",
+              "dependsOn": [
+                {
+                  "activity": "GetMetadata_JSON",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "name": "ForEach1",
+        "dependsOn": [
+          {
+            "activity": "Lookup brz config",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "lookup_config",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_group_name\":\"bronze\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Lookup brz config",
+        "dependsOn": [
+          {
+            "activity": "Start_Job_Instance",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "fd749faa-0201-a9fe-4f65-33e1cbd1c078",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "start_job_instance",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\",\n    \"job_group_name\": \"bronze\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Start_Job_Instance",
+        "dependsOn": []
+      }
+    ],
+    "parameters": {
+      "p_batch_group": {
+        "type": "String",
+        "defaultValue": "plato"
+      },
+      "p_job_id": {
+        "type": "String"
+      },
+      "batch_id": {
+        "type": "String",
+        "defaultValue": "20260204173700"
+      }
+    }
+  }
+}

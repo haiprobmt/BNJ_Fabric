@@ -1,0 +1,138 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "fd749faa-0201-a9fe-4f65-33e1cbd1c078",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "start_job_instance_dev",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\"\n    \"job_group_name\": \"staging\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.batch_id",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Start_Source_to_Staging_Job_Instance",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "4e6cf60b-008c-b9b5-4375-12ad143fac96",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "batch_id": {
+              "value": {
+                "value": "@pipeline().parameters.batch_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "job_id": {
+              "value": {
+                "value": "@pipeline().parameters.p_job_id",
+                "type": "Expression"
+              },
+              "type": "int"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.batch_id",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Xero_Extract_Source_to_Landing",
+        "dependsOn": [
+          {
+            "activity": "Start_Source_to_Staging_Job_Instance",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "77e6ac39-b719-832f-4af7-73f0ed5a9f20",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "batch_id": {
+              "value": {
+                "value": "@pipeline().parameters.batch_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "job_id": {
+              "value": {
+                "value": "@pipeline().parameters.p_job_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.batch_id",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Plato_Extract_Source_to_Landing",
+        "dependsOn": [
+          {
+            "activity": "Start_Source_to_Staging_Job_Instance",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "batch_id": {
+        "type": "string",
+        "defaultValue": "20260210115427"
+      },
+      "p_batch_group": {
+        "type": "string",
+        "defaultValue": "xero"
+      },
+      "p_job_id": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_bnj_landing_to_bronze"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ea1d9456-fb57-a70c-4e96-f821e3505fdc"
+  }
+}

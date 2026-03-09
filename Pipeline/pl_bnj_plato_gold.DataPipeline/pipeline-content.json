@@ -1,0 +1,159 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "lookup_config",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_group_name\":\"',pipeline().parameters.p_job_group_name,'\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Lookup gold configs",
+        "dependsOn": [
+          {
+            "activity": "Start_Job_Instance",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 2,
+          "items": {
+            "value": "@json(activity('Lookup gold configs').output.result.exitValue)",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "TridentNotebook",
+              "typeProperties": {
+                "notebookId": {
+                  "value": "@item().job_script",
+                  "type": "Expression"
+                },
+                "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+                "parameters": {
+                  "batch_id": {
+                    "value": {
+                      "value": "@pipeline().parameters.batch_id",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "job_id": {
+                    "value": {
+                      "value": "@item().job_id",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  }
+                },
+                "sessionTag": {
+                  "value": "@pipeline().parameters.gold_session_tag",
+                  "type": "Expression"
+                }
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "nb_plato_gold",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "ForEach1",
+        "dependsOn": [
+          {
+            "activity": "Lookup gold configs",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "fd749faa-0201-a9fe-4f65-33e1cbd1c078",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "start_job_instance_dev",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n    \"batch_id\":\"',pipeline().parameters.batch_id,'\",\n    \"job_id\":\"',pipeline().parameters.p_job_id,'\",\n    \"batch_group\":\"',pipeline().parameters.p_batch_group,'\",\n    \"job_group_name\": \"gold\"\n}')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Start_Job_Instance",
+        "dependsOn": []
+      }
+    ],
+    "parameters": {
+      "batch_id": {
+        "type": "String",
+        "defaultValue": "20260210115427"
+      },
+      "p_job_id": {
+        "type": "String"
+      },
+      "p_batch_group": {
+        "type": "String"
+      },
+      "gold_session_tag": {
+        "type": "string"
+      },
+      "p_job_group_name": {
+        "type": "String",
+        "defaultValue": "gold_agg"
+      }
+    }
+  }
+}

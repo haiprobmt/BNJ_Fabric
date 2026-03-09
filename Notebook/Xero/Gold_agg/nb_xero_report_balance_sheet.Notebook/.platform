@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_xero_report_balance_sheet"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "c00fefde-c068-b0af-4111-9a85bf344513"
+  }
+}

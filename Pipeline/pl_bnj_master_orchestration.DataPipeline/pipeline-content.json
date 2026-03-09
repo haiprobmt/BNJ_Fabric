@@ -1,0 +1,319 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "batch_id",
+          "value": {
+            "value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'Singapore Standard Time'), 'yyyyMMddHHmmss')\n ",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Set batch_id",
+        "dependsOn": []
+      },
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "business_dt",
+          "value": {
+            "value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'Singapore Standard Time'), 'yyyy-MM-dd HH:mm:ss')\n",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Set business_dt",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "start_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@variables('batch_id')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Start_Batch",
+        "dependsOn": [
+          {
+            "activity": "Set batch_id",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Set business_dt",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "36dc46ed-f68f-b280-40ce-2c65e6fd1fde",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Landing_to_Bronze",
+        "dependsOn": [
+          {
+            "activity": "Source_to_Landing",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "job_group_name": "silver",
+            "session_tag": "silver"
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "c54e3635-6eb0-842f-47d8-9ac13715cdee",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Bronze_to_Silver",
+        "dependsOn": [
+          {
+            "activity": "Landing_to_Bronze",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "d91d6666-a4cf-a6bf-436d-10ddcaa1a83b",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Source_to_Landing",
+        "dependsOn": [
+          {
+            "activity": "Start_Batch",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "session_tag": "gold_dim_fact",
+            "job_group_name": "gold_dim_fact"
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "c54e3635-6eb0-842f-47d8-9ac13715cdee",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Silver_to_gold",
+        "dependsOn": [
+          {
+            "activity": "Bronze_to_Silver",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "session_tag": "gold_agg",
+            "job_group_name": "gold_agg"
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "c54e3635-6eb0-842f-47d8-9ac13715cdee",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Gold_to_Gold_Agg",
+        "dependsOn": [
+          {
+            "activity": "Silver_to_gold",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "p_job_group_name": {
+        "type": "string"
+      },
+      "p_batch_group": {
+        "type": "string"
+      },
+      "p_job_id": {
+        "type": "string"
+      }
+    },
+    "variables": {
+      "batch_id": {
+        "type": "String"
+      },
+      "business_dt": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_bnj_master_orchestration"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e2a84310-b9a9-81bf-49f8-53e795ecbbbd"
+  }
+}

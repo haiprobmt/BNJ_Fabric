@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_xero_silver_contacts"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "546214cd-1b92-9226-47c0-05c28d48ba70"
+  }
+}

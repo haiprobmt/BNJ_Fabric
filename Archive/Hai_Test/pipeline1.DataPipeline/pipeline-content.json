@@ -1,0 +1,598 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "JsonSource",
+            "formatSettings": {
+              "type": "JsonReadSettings"
+            },
+            "storeSettings": {
+              "type": "AzureBlobStorageReadSettings",
+              "recursive": true,
+              "enablePartitionDiscovery": false
+            },
+            "datasetSettings": {
+              "type": "Json",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "plato/Data/20260203161300",
+                  "fileName": "adjustment.json"
+                }
+              },
+              "schema": {},
+              "connectionSettings": {
+                "name": "lh_bnj_bronze",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "c9d7507e-938a-4c6d-a042-d8743e386ab5",
+                    "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+                    "rootFolder": "Files"
+                  },
+                  "externalReferences": {
+                    "connection": "01fb3fb4-1c38-41dc-8c12-23e3cb2ab4b6"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableActionOption": "OverwriteSchema",
+            "applyVOrder": true,
+            "partitionOption": "None",
+            "datasetSettings": {
+              "type": "LakehouseTable",
+              "typeProperties": {
+                "schema": "plato",
+                "table": "brz_adjustment"
+              },
+              "schema": [],
+              "connectionSettings": {
+                "name": "lh_bnj_silver",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "e8a5651c-a1b6-49de-b2c5-11b7e197e77a",
+                    "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+                    "rootFolder": "Tables"
+                  },
+                  "externalReferences": {
+                    "connection": "01fb3fb4-1c38-41dc-8c12-23e3cb2ab4b6"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "_id",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "_id",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "date",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "date",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "remarks",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "remarks",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "location",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "location",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "invoice",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "invoice",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "reason",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "reason",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "serial",
+                  "type": "Int64"
+                },
+                "sink": {
+                  "name": "serial",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "finalized",
+                  "type": "Int64"
+                },
+                "sink": {
+                  "name": "finalized",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "finalized_on",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "finalized_on",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "finalized_by",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "finalized_by",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "created_on",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "created_on",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "created_by",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "created_by",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "last_edited",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "last_edited",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "last_edited_by",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "last_edited_by",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.cpu",
+                  "type": "Double"
+                },
+                "sink": {
+                  "name": "inventory.cpu",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.qty",
+                  "type": "Int64"
+                },
+                "sink": {
+                  "name": "inventory.qty",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.batch",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "inventory.batch",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.expiry",
+                  "type": "Int64"
+                },
+                "sink": {
+                  "name": "inventory.expiry",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.remarks",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "inventory.remarks",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.given_id",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "inventory.given_id",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory.adjustment_id",
+                  "type": "String"
+                },
+                "sink": {
+                  "name": "inventory.adjustment_id",
+                  "physicalType": "string"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            },
+            "columnFlattenSettings": {
+              "treatArrayAsString": false,
+              "treatStructAsString": false,
+              "flattenColumnDelimiter": "."
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Copy data1",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": []
+      },
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "AzurePostgreSqlSource",
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00",
+            "datasetSettings": {
+              "type": "AzurePostgreSqlTable",
+              "typeProperties": {
+                "table": "target",
+                "schema": "public"
+              },
+              "version": "2.0",
+              "schema": [],
+              "externalReferences": {
+                "connection": "bb8560d7-ae49-4cad-954c-911d3f37d592"
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableActionOption": "OverwriteSchema",
+            "applyVOrder": true,
+            "partitionOption": "None",
+            "datasetSettings": {
+              "type": "LakehouseTable",
+              "typeProperties": {
+                "schema": "postgresql",
+                "table": "brz_target"
+              },
+              "schema": [],
+              "connectionSettings": {
+                "name": "lh_bnj_bronze",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "3e386ab5-d874-a042-4c6d-938ac9d7507e",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Tables"
+                  },
+                  "externalReferences": {
+                    "connection": "01fb3fb4-1c38-41dc-8c12-23e3cb2ab4b6"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "id",
+                  "type": "Guid",
+                  "physicalType": "uuid"
+                },
+                "sink": {
+                  "name": "id",
+                  "physicalType": "string"
+                }
+              },
+              {
+                "source": {
+                  "name": "fiscal_year",
+                  "type": "Int32",
+                  "physicalType": "integer"
+                },
+                "sink": {
+                  "name": "fiscal_year",
+                  "physicalType": "integer"
+                }
+              },
+              {
+                "source": {
+                  "name": "quarter",
+                  "type": "Int32",
+                  "physicalType": "integer"
+                },
+                "sink": {
+                  "name": "quarter",
+                  "physicalType": "integer"
+                }
+              },
+              {
+                "source": {
+                  "name": "revenue_target",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "revenue_target",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "cost_of_goods_sold",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "cost_of_goods_sold",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "operating_expenses",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "operating_expenses",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "profit",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "profit",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "accounts_receivable",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "accounts_receivable",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "accounts_payable",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "accounts_payable",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "inventory_value",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "inventory_value",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "interest_expense",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "interest_expense",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "outstanding_principal",
+                  "type": "Int64",
+                  "physicalType": "bigint"
+                },
+                "sink": {
+                  "name": "outstanding_principal",
+                  "physicalType": "long"
+                }
+              },
+              {
+                "source": {
+                  "name": "min_inventory_turnover_rate",
+                  "type": "Int32",
+                  "physicalType": "integer"
+                },
+                "sink": {
+                  "name": "min_inventory_turnover_rate",
+                  "physicalType": "integer"
+                }
+              },
+              {
+                "source": {
+                  "name": "max_inventory_turnover_rate",
+                  "type": "Int32",
+                  "physicalType": "integer"
+                },
+                "sink": {
+                  "name": "max_inventory_turnover_rate",
+                  "physicalType": "integer"
+                }
+              },
+              {
+                "source": {
+                  "name": "max_expired_stock_percentage",
+                  "type": "Int32",
+                  "physicalType": "integer"
+                },
+                "sink": {
+                  "name": "max_expired_stock_percentage",
+                  "physicalType": "integer"
+                }
+              },
+              {
+                "source": {
+                  "name": "min_patient_satisfaction_score",
+                  "type": "Int32",
+                  "physicalType": "integer"
+                },
+                "sink": {
+                  "name": "min_patient_satisfaction_score",
+                  "physicalType": "integer"
+                }
+              },
+              {
+                "source": {
+                  "name": "created_at",
+                  "type": "DateTime",
+                  "physicalType": "timestamp with time zone"
+                },
+                "sink": {
+                  "name": "created_at",
+                  "physicalType": "timestamp"
+                }
+              },
+              {
+                "source": {
+                  "name": "updated_at",
+                  "type": "DateTime",
+                  "physicalType": "timestamp with time zone"
+                },
+                "sink": {
+                  "name": "updated_at",
+                  "physicalType": "timestamp"
+                }
+              },
+              {
+                "source": {
+                  "name": "deleted_at",
+                  "type": "DateTime",
+                  "physicalType": "timestamp with time zone"
+                },
+                "sink": {
+                  "name": "deleted_at",
+                  "physicalType": "timestamp"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Copy data1_copy1",
+        "dependsOn": []
+      }
+    ]
+  }
+}

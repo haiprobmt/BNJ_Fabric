@@ -1,0 +1,561 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "batch_id",
+          "value": {
+            "value": "@formatDateTime(utcNow(), 'yyyyMMddHHmmss')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Set batch_id",
+        "dependsOn": []
+      },
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "business_dt",
+          "value": {
+            "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd HH:mm:ss')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Set business_dt",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "start_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Start_Batch",
+        "dependsOn": [
+          {
+            "activity": "Set batch_id",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Set business_dt",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "77e6ac39-b719-832f-4af7-73f0ed5a9f20",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "batch_id": {
+              "value": {
+                "value": "@variables('batch_id')",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "job_id": {
+              "value": {
+                "value": "@pipeline().parameters.p_job_id",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Get_json_files_from API",
+        "dependsOn": [
+          {
+            "activity": "Start_Batch",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "end_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\",\n  \"status\":\"SUCCESSED\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "End_Batch",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_gold_agg",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "cf774da6-0134-4578-960e-76062eca7908",
+          "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "end_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\",\n  \"status\":\"FAILED\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "End_Batch_Failed_staging",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "Get_json_files_from API",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "cf774da6-0134-4578-960e-76062eca7908",
+          "workspaceId": "c81c26a1-3386-4efb-b6ea-59363a6145b7",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "end_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\",\n  \"status\":\"FAILED\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "End_Batch_Failed_bronze",
+        "state": "Inactive",
+        "onInactiveMarkAs": "Succeeded",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_bronze",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "end_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\",\n  \"status\":\"FAILED\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "End_Batch_Failed_silver",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_silver",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "end_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\",\n  \"status\":\"FAILED\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "End_Batch_Failed_gold_dim_fact",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_gold_dim_fact",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "2eca7908-7606-960e-4578-0134cf774da6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "METHOD_NAME": {
+              "value": "end_batch",
+              "type": "string"
+            },
+            "PARAMETERS": {
+              "value": {
+                "value": "@concat('{\n  \"batch_id\":\"',variables('batch_id'),'\",\n  \"status\":\"FAILED\"\n}\n')",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          },
+          "sessionTag": {
+            "value": "@pipeline().parameters.p_batch_group",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "End_Batch_Failed_gold_agg",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_gold_agg",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "sil_session_tag": "plato_sil"
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "c54e3635-6eb0-842f-47d8-9ac13715cdee",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "pl_bnj_plato_silver",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_bronze",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "36dc46ed-f68f-b280-40ce-2c65e6fd1fde",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "pl_bnj_plato_bronze",
+        "dependsOn": [
+          {
+            "activity": "Get_json_files_from API",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "gold_session_tag": "plato_gold",
+            "p_job_group_name": "gold_dim_fact"
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "4d099e25-525f-a2a3-4a6b-34c06b49b3c2",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "pl_bnj_plato_gold_dim_fact",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_silver",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "p_batch_group": {
+              "value": "@pipeline().parameters.p_batch_group",
+              "type": "Expression"
+            },
+            "p_job_id": {
+              "value": "@pipeline().parameters.p_job_id",
+              "type": "Expression"
+            },
+            "batch_id": {
+              "value": "@variables('batch_id')",
+              "type": "Expression"
+            },
+            "gold_session_tag": "plato_gold",
+            "p_job_group_name": "gold_agg"
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "4d099e25-525f-a2a3-4a6b-34c06b49b3c2",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "ee0eca37-7885-44dc-8ed6-f8c62f431a4c"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "pl_bnj_plato_gold_agg",
+        "dependsOn": [
+          {
+            "activity": "pl_bnj_plato_gold_dim_fact",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "p_job_group_name": {
+        "type": "String",
+        "defaultValue": "plato"
+      },
+      "p_batch_group": {
+        "type": "String",
+        "defaultValue": "plato"
+      },
+      "p_job_id": {
+        "type": "String"
+      }
+    },
+    "variables": {
+      "batch_id": {
+        "type": "String"
+      },
+      "business_dt": {
+        "type": "String"
+      }
+    }
+  }
+}

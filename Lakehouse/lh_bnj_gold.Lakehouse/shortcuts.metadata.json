@@ -1,0 +1,14 @@
+[
+  {
+    "name": "gold_test_1",
+    "path": "/Tables",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/gold_test",
+        "itemId": "3b3b6765-5dab-43d6-a809-b7b4891778c7",
+        "workspaceId": "d6cf87ab-ab99-4857-b187-496da4c9c3ce"
+      }
+    }
+  }
+]

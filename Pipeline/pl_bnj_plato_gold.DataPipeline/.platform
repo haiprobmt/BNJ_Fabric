@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_bnj_plato_gold"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4d099e25-525f-a2a3-4a6b-34c06b49b3c2"
+  }
+}
